@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Translate Features</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.1.0/css/ol.css" type="text/css">
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.1.0/build/ol.js"></script>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <script>
+
+	/*
+	Source to vector layer
+	*/
+     var source = new ol.source.Vector({wrapX: false});
+
+     // Vector layer
+	 var vector = new ol.layer.Vector({
+        source: source
+      });
+
+	 // Interaction Select 
+      var select = new ol.interaction.Select({
+        wrapX: false
+      });
+
+	  // Interaction Transale
+	  var translate = new ol.interaction.Translate({
+        features: select.getFeatures()
+      });
+	  
+
+      var pointFeature = new ol.Feature(new ol.geom.Point([0, 0]));
+
+      var lineFeature = new ol.Feature(
+          new ol.geom.LineString([[-1e7, 1e6], [-1e6, 3e6]]));
+
+
+      var polygonFeature = new ol.Feature(
+          new ol.geom.Polygon([[[-3e6, -1e6], [-3e6, 1e6],
+              [-1e6, 1e6], [-1e6, -1e6], [-3e6, -1e6]]]));
+
+       var modify = new ol.interaction.Modify({
+        features: select.getFeatures()
+      });
+
+
+      var map = new ol.Map({
+        interactions: ol.interaction.defaults().extend([ translate, select]),
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.TileJSON({
+              url: 'https://api.tiles.mapbox.com/v3/mapbox.geography-class.json?secure'
+            })
+          }),
+          new ol.layer.Vector({
+            source: new ol.source.Vector({
+              features: [pointFeature, lineFeature,polygonFeature ]
+            }),
+            style: new ol.style.Style({
+              image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+                anchor: [0.5, 46],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                opacity: 0.95,
+                src: 'https://openlayers.org/en/v4.1.0/examples/data/icon.png'
+              })),
+              stroke: new ol.style.Stroke({
+                width: 3,
+                color: [255, 0, 0, 1]
+              }),
+              fill: new ol.style.Fill({
+                color: [0, 0, 255, 0.6]
+              })
+            })
+          })
+         ,vector],
+        target: 'map',
+        view: new ol.View({
+          center: [0, 0],
+          zoom: 2
+        })
+      });
+    </script>
+  </body>
+</html>
